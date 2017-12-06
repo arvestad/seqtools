@@ -1,0 +1,28 @@
+#! /usr/bin/env perl
+
+my %c=();
+while (<>) {
+      if (m/^>/) {
+	  next;
+      } elsif (m/(\S+)/) {
+	  for (my $i=0; $i<length($1); $i++) {
+	      $c{uc(substr($1, $i, 1))}++;
+	  }
+      }
+}
+
+my $tot=0;
+my $tot_acgt=0;
+print "   #  %\n";
+for my $x (keys(%c)) {
+    $tot += $c{$x};
+    if ($x =~ m/A|C|G|T/) {
+	$tot_acgt += $c{$x};
+    }
+}
+for my $x (keys(%c)) {
+    print sprintf("%s  %d  %.2f\n", $x, $c{$x}, $c{$x}/$tot);
+}
+print sprintf("Total: %d\n", $tot);
+print sprintf("GC = %.2f\n", ($c{'C'}+$c{'G'}) / $tot_acgt);
+
