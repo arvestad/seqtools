@@ -1,0 +1,25 @@
+#! /usr/local/bin/python
+from Bio import SeqIO
+import argparse
+import sys
+ 
+ap = argparse.ArgumentParser()
+ap.add_argument('infile')
+ap.add_argument('-p', '--prefix', type=int, default=0, help='Number of characters to remove from the beggining of the accession. Note: PHYLIP format allows max 10 character accessions.')
+args = ap.parse_args()
+
+ih = open(args.infile, "rU")
+
+sequences = list(SeqIO.parse(ih, "fasta"))
+
+if args.prefix > 0:
+    for rec in sequences:
+        id = rec.id
+        if len(id) > args.prefix:
+            rec.id = id[args.prefix:]
+        else:
+            raise Exception("Too short accession in input sequences '"+id+"'.")
+
+SeqIO.write(sequences, sys.stdout, "phylip")
+
+ih.close()

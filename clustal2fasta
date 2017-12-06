@@ -1,0 +1,15 @@
+#! /usr/local/bin/python
+from Bio import SeqIO
+import argparse
+import sys
+ 
+ap = argparse.ArgumentParser()
+ap.add_argument('infile')
+args = ap.parse_args()
+
+ih = open(args.infile, "rU")
+ 
+sequences = SeqIO.parse(ih, "clustal")
+SeqIO.write(sequences, sys.stdout, "fasta")
+
+ih.close()

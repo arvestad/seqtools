@@ -1,0 +1,93 @@
+#! /usr/bin/perl
+
+#
+# Converts EMF format, from Ensembl alignments, to Fasta. 
+#
+# Ancestral sequences are discarded. 
+#
+
+use Getopt::Long;
+
+my $filename;
+my $stripindels=0;
+my $noupcasenucs=0;
+
+GetOptions('strip' => \$stripindels,
+	   'noupcase' => \$noupcasenucs
+    );
+
+if (scalar(@ARGV) < 1) {
+    die("Expected filename!");
+}
+
+my $filename = shift @ARGV;
+
+
+
+open(F, "<$filename") or die "Miserably";
+
+my $alignno=0;
+
+while (<F>) {
+    my %sh=();
+    my %names2i=();
+    my %i2name=();
+
+    my $i=0;
+
+    while (<F>) { 
+	if (m/^\#/) {
+	    next;
+	} elsif (m/^SEQ\s+(\S+)\s/) {
+	    $names2i{$1} = $i;
+	    $i2name{$i} = $1;
+	    $sh{$i} = '';
+	    $i++;
+	} elsif (m/^TREE/) {
+	    next;
+	} elsif (m/^DATA/) {
+	    last;
+	}
+    }
+
+    print STDERR "Alignment $alignno: # sequences=$i, ";
+
+    # After token "DATA"
+    my $k = scalar(keys(%sh));
+    my $n=0;
+    while (<F>) {
+	if (m/^\/\//) {
+	    last;
+	}
+	else {
+	    for (my $j=0; $j<$k; $j++) {
+		my $c = substr($_, $j, 1);
+		if ($stripindels && $c eq '-') {
+		    next;
+		} else { 
+		    $sh{$j} .= $c;
+		}
+	    }
+	}
+	$n++;
+    }
+    print STDERR "alignment length=$n\n";
+
+    open(OUT, ">converted$filename.$alignno" . ".fa") or die("bloddy hell!!");
+    for (my $j=0; $j<$k; $j++) {
+	if ($i2name{$j} =~ m/ancestral/) {
+	    next;
+	} else {
+	    my $str = $sh{$j};
+	    if (!$noupcasenucs) {
+		$str = uc($str);
+	    }
+	    print OUT ">", $i2name{$j}, "\n", $str, "\n";
+	}
+    }
+    close(OUT);
+    $alignno++;
+}
+
+
+    

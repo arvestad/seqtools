@@ -1,0 +1,22 @@
+#! /usr/bin/env python2.7
+
+import sys
+from Bio import SeqIO
+
+seqs = {}
+fileformat = 'fasta'			# Assume fasta for now
+
+if sys.argv < 2:
+	print usage
+else:
+	seqs = SeqIO.to_dict(SeqIO.parse(sys.argv[1], fileformat))
+	for i in sys.argv[2:]:
+		sd = SeqIO.to_dict(SeqIO.parse(i, fileformat))
+		for id in sd.keys():
+			seqs[id] += sd[id]
+
+
+for id, seqr in seqs.items():
+	SeqIO.write(seqr, sys.stdout, fileformat)
+	
+
