@@ -1,0 +1,2 @@
+# seqtools
+Some simple utilities 
