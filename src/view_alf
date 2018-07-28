@@ -6,7 +6,7 @@ import sys
  
 def colorizer(c):
     if c in 'AILMFWVC':
-        return Back.GREEN + c
+        return Back.BLUE + c
     elif c in 'KR':
         return Back.RED + c
     elif c in 'ED':
