@@ -68,6 +68,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('infile')
     ap.add_argument('-w', '--width', type=int, default=0, help='Width of alignment blocks. Defaults to terminal width minus accession width, essentially.')
+    ap.add_argument('-k', '--keep-colors-when-redirecting', action='store_true', help='Do not strip colors when redirecting to stdout, or similar.')
 #    ap.add_argument('-p', '--prefix', type=int, default=0, help='Number of characters to remove from the beggining of the accession. Note: PHYLIP format allows max 10 character accessions.')
     args = ap.parse_args()
 
@@ -79,7 +80,11 @@ def main():
     else:
         block_width = args.width
 
-    colorama_init()             # Set up colors
+    # Set up colors
+    if args.keep_colors_when_redirecting:
+        colorama_init(strip=False)
+    else:
+        colorama_init()
 
     for start in range(0, al_width, block_width):
         for record in alignment:
