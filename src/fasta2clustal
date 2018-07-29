@@ -1,0 +1,14 @@
+#! /usr/bin/env python
+from Bio import AlignIO
+import argparse
+import sys
+ 
+ap = argparse.ArgumentParser()
+ap.add_argument('infile')
+ap.add_argument('-p', '--prefix', type=int, default=0, help='Number of characters to remove from the beggining of the accession. Note: PHYLIP format allows max 10 character accessions.')
+args = ap.parse_args()
+
+alignment = AlignIO.read(args.infile, "fasta")
+AlignIO.write([alignment], sys.stdout, "clustal")
+
+
