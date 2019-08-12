@@ -1,0 +1,13 @@
+#! /usr/bin/env python
+from Bio import SeqIO
+import argparse
+import sys
+ 
+ap = argparse.ArgumentParser(description='Read a Fasta file and output sequence lengths.')
+ap.add_argument('infile')
+args = ap.parse_args()
+
+with open(args.infile, "rU") as ih:
+    sequences = SeqIO.parse(ih, "fasta")
+    for rec in sequences:
+        print(len(rec.seq))
